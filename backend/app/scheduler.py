@@ -6,6 +6,7 @@ import json
 from redis_client import r
 from webscraping import get_info_on_top_singers
 from get_concerts_ticketmaster import query_concert_info_for_one_singer
+import traceback
 
 scheduler = AsyncIOScheduler()
 scheduler.start()
@@ -62,11 +63,10 @@ def update_concerts_for_top_global_singers(n = 100):
 
 @scheduler.scheduled_job(
     id="update_artist_leaderboard",
-    trigger=CronTrigger(hour='*', minute='*/1', timezone=pytz.UTC, jitter=0)
+    trigger=CronTrigger(hour='*', minute='*', second="*/30", timezone=pytz.UTC, jitter=0)
 )
 def update_artist_leaderboard():
     info_on_top_singers = get_info_on_top_singers()
-
     yesterdays_listeners = dict()
     columns = [
         "Index", "Rank", "Image", "Artist", "Monthly listeners (millions)",
